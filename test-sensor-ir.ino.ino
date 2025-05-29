@@ -1,48 +1,50 @@
-// const int sensorPin = 7;    // Pin untuk membaca sensor
-// const int ledPin = 13;      // Pin untuk LED indikator
+// Pin sensor IR 3-pin
+const int ir3Pin1 = 7;
+const int ir3Pin2 = 8;
+const int ir3Pin3 = 9;
 
-// void setup() {
-//   pinMode(sensorPin, INPUT);
-//   pinMode(ledPin, OUTPUT);
-//   Serial.begin(9600);
-// }
-
-// void loop() {
-//   int sensorValue = digitalRead(sensorPin);
-
-//   if (sensorValue == LOW) {
-//     Serial.println("OBJEK TERDETEKSI");
-//     digitalWrite(ledPin, HIGH); // Nyalakan LED
-//   } else {
-//     Serial.println("TIDAK TERDETEKSI");
-//     digitalWrite(ledPin, LOW);  // Matikan LED
-//   }
-
-//   delay(200);
-// }
-
-const int analogPin = A0;  // Pin untuk membaca nilai analog
-const int digitalPin = 8;  // Pin untuk membaca nilai digital
-const int ledPin = 13;     // LED indikator pada board
+// Pin sensor IR 4-pin
+const int ir4DigitalPin = 10;
+const int ir4AnalogPin = A0;
 
 void setup() {
-  pinMode(digitalPin, INPUT);
-  pinMode(ledPin, OUTPUT);
+  // Inisialisasi pin sebagai input
+  pinMode(ir3Pin1, INPUT);
+  pinMode(ir3Pin2, INPUT);
+  pinMode(ir3Pin3, INPUT);
+  pinMode(ir4DigitalPin, INPUT);
+
+  // Memulai komunikasi serial
   Serial.begin(9600);
 }
 
 void loop() {
-  int analogValue = analogRead(analogPin);    // Membaca nilai analog (0–1023)
-  int digitalValue = digitalRead(digitalPin); // Membaca nilai digital (HIGH atau LOW)
+  // Membaca sensor IR 3-pin
+  int ir3Val1 = digitalRead(ir3Pin1);
+  int ir3Val2 = digitalRead(ir3Pin2);
+  int ir3Val3 = digitalRead(ir3Pin3);
 
-  // Menampilkan nilai ke Serial Monitor
-  Serial.print("Analog: ");
-  Serial.print(analogValue);
-  Serial.print(" | Digital: ");
-  Serial.println(digitalValue == LOW ? "Objek Terdeteksi" : "Tidak Terdeteksi");
+  // Membaca sensor IR 4-pin
+  int ir4DigitalVal = digitalRead(ir4DigitalPin);
+  int ir4AnalogVal = analogRead(ir4AnalogPin);
 
-  // Mengontrol LED indikator
-  digitalWrite(ledPin, digitalValue == LOW ? HIGH : LOW);
+  // Menampilkan hasil pembacaan
+  Serial.println("=== Pembacaan Sensor ===");
+  Serial.print("IR3-1 (D7): ");
+  Serial.println(ir3Val1 == LOW ? "Objek Terdeteksi" : "Tidak Terdeteksi");
 
-  delay(200); // Delay untuk stabilitas pembacaan
+  Serial.print("IR3-2 (D8): ");
+  Serial.println(ir3Val2 == LOW ? "Objek Terdeteksi" : "Tidak Terdeteksi");
+
+  Serial.print("IR3-3 (D9): ");
+  Serial.println(ir3Val3 == LOW ? "Objek Terdeteksi" : "Tidak Terdeteksi");
+
+  Serial.print("IR4 Digital (D10): ");
+  Serial.println(ir4DigitalVal == LOW ? "Objek Terdeteksi" : "Tidak Terdeteksi");
+
+  Serial.print("IR4 Analog (A0): ");
+  Serial.println(ir4AnalogVal);
+
+  Serial.println("------------------------");
+  delay(500); // Delay untuk stabilitas pembacaan
 }
