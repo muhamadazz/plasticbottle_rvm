@@ -1,29 +1,14 @@
-// Pin infrared
-const int irPins[] = {A0, A1, A2, A3};
+// === PIN INFRARED ===
+const int ir1Pin = 3;   // IR sensor 1
+const int ir2Pin = 4;   // IR sensor 2
 
-// Motor DC pin
-const int ENA = 8;
-const int IN1 = 6;
-const int IN2 = 7;
-
-// State
 String inputString = "";
-bool inputComplete = false;
 
 void setup() {
   Serial.begin(9600);
 
-  // Set pin mode infrared
-  for (int i = 0; i < 4; i++) {
-    pinMode(irPins[i], INPUT);
-  }
-
-  // Set motor pins
-  pinMode(ENA, OUTPUT);
-  pinMode(IN1, OUTPUT);
-  pinMode(IN2, OUTPUT);
-
-  stopMotor();
+  pinMode(ir1Pin, INPUT);
+  pinMode(ir2Pin, INPUT);
 }
 
 void loop() {
@@ -32,60 +17,25 @@ void loop() {
     inputString.trim();
 
     if (inputString == "BOTOL") {
-      int sensorCount = 0;
+      int sensor1 = digitalRead(ir1Pin);
+      int sensor2 = digitalRead(ir2Pin);
 
-      for (int i = 0; i < 4; i++) {
-        int value = digitalRead(irPins[i]);
-        if (value == LOW) { // Jika sensor aktif (IR terhalang)
-          sensorCount++;
-        }
-      }
+      int sensorCount = 0;
+      if (sensor1 == LOW) sensorCount++;  // LOW = terhalang
+      if (sensor2 == LOW) sensorCount++;
 
       int poin = 0;
-      if (sensorCount == 2) {
-        poin = 5;
-      } else if (sensorCount == 3) {
-        poin = 10;
-      } else if (sensorCount == 4) {
-        poin = 15;
-      } else {
-        poin = 0;
-      }
+      if (sensorCount == 1) poin = 5;
+      else if (sensorCount == 2) poin = 10;
 
-     
-      gerakMotor(1); // arah searah
-      delay(1000);   // Sesuain sama kecepatan dan durasi buat ke 60 derajat
-      stopMotor();
-
-      // Kirim ke Python
       Serial.println("poin:" + String(poin));
       Serial.println("SELESAI");
     }
 
     else if (inputString == "TIDAK") {
-      // Motor berputar -60 derajat
-      gerakMotor(-1); //arah kebawah (harusnya)
-      delay(1000);
-      stopMotor();
-
+      // Jika tidak ada botol, tetap kirim poin 0 dan selesai
+      Serial.println("poin:0");
       Serial.println("SELESAI");
     }
   }
-}
-
-void gerakMotor(int arah) {
-  digitalWrite(ENA, HIGH);
-  if (arah == 1) {
-    digitalWrite(IN1, HIGH);
-    digitalWrite(IN2, LOW);
-  } else {
-    digitalWrite(IN1, LOW);
-    digitalWrite(IN2, HIGH);
-  }
-}
-
-void stopMotor() {
-  digitalWrite(ENA, LOW);
-  digitalWrite(IN1, LOW);
-  digitalWrite(IN2, LOW);
 }
